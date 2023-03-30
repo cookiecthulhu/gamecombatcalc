@@ -1,0 +1,456 @@
+using System;
+#nullable disable
+
+namespace FireEmblemCombatSim
+{
+    public class Calculator
+    {
+        public static Character playerCharacter = new();
+        public static Character enemyCharacter = new();
+
+        public static bool FriendOrFoe = true;
+        public bool WeaponType;
+
+        public static bool PlayerAlive;
+        public static bool EnemyAlive;
+
+        public bool Hit;
+        public bool CritHit;
+
+        public double HitPoints, Build, Strength, Magic, Dexterity, Speed, Defense, Resistance, Luck;
+        public double CriticalStat, CriticalHit, AvoidStat, DodgeStat, HitStat, CombatHit, AttackStat, AttackSpeed, Damage, HitPointTotal;
+
+        readonly List<string> StattiKysely = new(9);
+        readonly List<double> Statit = new(9);
+        readonly List<string> AseKysely = new(6);
+        readonly List<double> AseStatit = new(6);
+        public readonly List<double> LopullisetStatit = new(5);
+        public readonly List<string> FinalStatDisplay = new(5);
+
+        public double WeaponMight, WeaponHit, WeaponWeight, WeaponAvoid, WeaponCritical, WeaponDodge;
+        public string[] AseStattiMuunnos = new string[6];
+
+        public int LopullinenVahinko;
+
+        public void ListContents()
+        {
+
+            StattiKysely.Add("Hit Points: ");
+            StattiKysely.Add("Build: ");
+            StattiKysely.Add("Strength: ");
+            StattiKysely.Add("Magic: ");
+            StattiKysely.Add("Dexterity: ");
+            StattiKysely.Add("Speed: ");
+            StattiKysely.Add("Defense: ");
+            StattiKysely.Add("Resistance: ");
+            StattiKysely.Add("Luck: ");
+
+            Statit.Add(HitPoints);
+            Statit.Add(Build);
+            Statit.Add(Strength);
+            Statit.Add(Magic);
+            Statit.Add(Dexterity);
+            Statit.Add(Speed);
+            Statit.Add(Defense);
+            Statit.Add(Resistance);
+            Statit.Add(Luck);
+
+            AseKysely.Add("Might: ");
+            AseKysely.Add("Hit: ");
+            AseKysely.Add("Weight: ");
+            AseKysely.Add("Avoid: ");
+            AseKysely.Add("Critical: ");
+            AseKysely.Add("Dodge: ");
+
+            AseStatit.Add(WeaponMight);
+            AseStatit.Add(WeaponHit);
+            AseStatit.Add(WeaponWeight);
+            AseStatit.Add(WeaponAvoid);
+            AseStatit.Add(WeaponCritical);
+            AseStatit.Add(WeaponDodge);
+
+            LopullisetStatit.Add(AttackStat);
+            LopullisetStatit.Add(HitStat);
+            LopullisetStatit.Add(AvoidStat);
+            LopullisetStatit.Add(CriticalStat);
+            LopullisetStatit.Add(DodgeStat);
+
+            FinalStatDisplay.Add("Attack: ");
+            FinalStatDisplay.Add("Hit: ");
+            FinalStatDisplay.Add("Avoid: ");
+            FinalStatDisplay.Add("Critical; ");
+            FinalStatDisplay.Add("Dodge: ");
+        }
+
+        public void FinalStats()
+        {
+            DodgeStat = Luck;
+
+            if (!WeaponType)
+            {
+                AttackStat = WeaponMight + Strength;
+            }
+            else if (WeaponType)
+            {
+                AttackStat = WeaponMight + Magic;
+
+            }
+
+            CriticalStat = WeaponCritical + Math.Round(Dexterity / 2);
+            HitStat = WeaponHit + Dexterity * 2 + Math.Round(Luck / 2);
+            AvoidStat = Speed * 2 + Math.Round(Luck / 2);
+            AttackSpeed = Speed - (WeaponWeight - Build);
+            if (WeaponWeight - Build > 0) { AttackSpeed = Speed; }
+
+            HitPointTotal = HitPoints;
+        }
+
+
+
+        /*playerCharacter.CriticalHit = playerCharacter.CriticalStat - enemyCharacter.DodgeStat;
+        if (playerCharacter.CriticalHit < 0) { playerCharacter.CriticalHit = 0; }
+
+        Damage = AttackStat - enemyCharacter.Defense;
+        if (playerCharacter.Damage > 0) { playerCharacter.Damage = 0; }
+
+        playerCharacter.Damage = playerCharacter.AttackStat - enemyCharacter.Resistance;
+        if (playerCharacter.Damage > 0) { playerCharacter.Damage = 0; }
+
+
+        playerCharacter.CombatHit = playerCharacter.HitStat - enemyCharacter.AvoidStat;*/
+
+
+        public class Character : Calculator
+        {
+
+        }
+
+        static void Main()
+        {
+            playerCharacter.ListContents();
+            enemyCharacter.ListContents();
+
+            playerCharacter.CharStats();
+
+            playerCharacter.WeaponStats();
+
+            foreach (int i in playerCharacter.Statit)
+            { Console.Write(i + " "); }
+            foreach (int i in playerCharacter.AseStatit)
+            { Console.Write(i + " ");  }
+
+            enemyCharacter.CharStats();
+
+            enemyCharacter.WeaponStats();
+
+            playerCharacter.FinalStats();
+
+            foreach (double i in playerCharacter.LopullisetStatit)
+            { Console.Write(i + " "); }
+
+            enemyCharacter.FinalStats();
+
+            var CmbtTxt = new CombatTekstit();
+            CmbtTxt.CombatTekstiVaihdot();
+
+            var Taistelu = new ItseTappelu();
+            Taistelu.ActualCombat();
+
+        }
+
+
+            public void CharStats()
+            {
+
+                int i = 0;
+
+                if (FriendOrFoe == true)
+                {
+                    Console.WriteLine("Anna pelaajahahmon statit: ");
+                }
+                else if (FriendOrFoe == false)
+                {
+                    Console.WriteLine("\nAnna vihollishahmon statit: ");
+                }
+
+                while (i < StattiKysely.Count)
+                {
+                    Console.Write(StattiKysely[i]);
+                    string input = Console.ReadLine();
+                    double.TryParse(input, out double temp);
+                    if (!double.TryParse(input, out temp))
+                    {
+                        Console.WriteLine("Et antanut statille arvoa! Uudestaan: ");
+                    }
+                    else
+                    {
+                        Statit[i] = temp;
+                        i++;
+                    }
+                }
+
+
+            }
+        public void WeaponStats()
+        {
+
+            int i = 0;
+
+            if (FriendOrFoe == true)
+            {
+                Console.WriteLine("\nSeuraavaksi pelaajan aseen statit: ");
+            }
+            else
+            {
+                Console.WriteLine("\nSeuraavaksi vihollisen aseen statit: ");
+            }
+
+            while (i < AseKysely.Count)
+            {
+
+                Console.Write(AseKysely[i]);
+                string input = Console.ReadLine();
+                double.TryParse(input, out double temp);
+                if (!double.TryParse(input, out temp))
+                {
+                    Console.WriteLine("Et antanut statille arvoa! Uudestaan: ");
+                }
+                else
+                {
+                    AseStatit[i] = temp;
+                    i++;
+                }
+            }
+
+            if (i == AseKysely.Count)
+            {
+                Console.Write("Onko ase maaginen? ");
+
+                ConsoleKey response;
+                do
+                {
+                    Console.Write("\ny/n: ");
+                    response = Console.ReadKey(false).Key;
+
+                } while (response != ConsoleKey.Y && response != ConsoleKey.N);
+
+                if (response == ConsoleKey.Y && FriendOrFoe == true)
+                {
+                    WeaponType = true;
+                    Console.WriteLine("\nPelaajan ase on maaginen.");
+                }
+
+                else if (response == ConsoleKey.N && FriendOrFoe == true)
+                {
+                    WeaponType = false;
+                    Console.WriteLine("\nPelaajan ase ei ole maaginen.");
+                }
+
+                else if (response == ConsoleKey.Y && FriendOrFoe == false)
+                {
+                    WeaponType = true;
+                    Console.WriteLine("\nVihollisen ase on maaginen.");
+                }
+                else if (response == ConsoleKey.N && FriendOrFoe == false)
+                {
+                    WeaponType = false;
+                    Console.WriteLine("\nVihollisen ase ei ole maaginen.");
+
+                }
+
+            }
+            FriendOrFoe = !FriendOrFoe;
+        }
+
+
+    }
+
+    public class CombatCalcs : Calculator
+        {
+
+            public Random Osuma = new();
+            public Random Critical = new();
+
+            public void PlayerCombat()
+            {
+                if (PlayerAlive == true && Osuma.Next(0, 100) <= playerCharacter.CombatHit)
+                {
+                    playerCharacter.Hit = true;
+                    if (Critical.Next(0, 100) <= playerCharacter.CriticalHit)
+                    { playerCharacter.CritHit = true; }
+                    else { playerCharacter.CritHit = false; }
+                }
+                else { playerCharacter.Hit = false; playerCharacter.CritHit = false; }
+
+                if (playerCharacter.Hit == true && !playerCharacter.CritHit == false)
+                { enemyCharacter.HitPointTotal -= playerCharacter.Damage; }
+                else if (playerCharacter.Hit == true && playerCharacter.CritHit == true)
+                { enemyCharacter.HitPointTotal -= playerCharacter.Damage * 3; }
+
+                if (enemyCharacter.HitPointTotal <= 0) { EnemyAlive = false; }
+            }
+
+            public void EnemyCombat()
+            {
+                if (EnemyAlive == true && Osuma.Next(0, 100) <= enemyCharacter.CombatHit)
+                {
+                    enemyCharacter.Hit = true;
+                    if (Critical.Next(0, 100) <= enemyCharacter.CriticalHit)
+                    { enemyCharacter.CritHit = true; }
+                    else { enemyCharacter.CritHit = false; }
+                }
+                else { enemyCharacter.Hit = false; enemyCharacter.CritHit = false; }
+
+                if (enemyCharacter.Hit == true && !enemyCharacter.CritHit == false)
+                { playerCharacter.HitPointTotal -= enemyCharacter.Damage; }
+                if (enemyCharacter.Hit == true && !enemyCharacter.CritHit == true)
+                { playerCharacter.HitPointTotal -= playerCharacter.Damage * 3; }
+
+                if (playerCharacter.HitPointTotal <= 0) { PlayerAlive = false; }
+            }
+        }
+
+    public class CombatTekstit : Calculator
+    {
+        public static string PelaajanOsumaTeksti;
+        public static string VihollisenOsumaTeksti;
+        public static string TaistelunLopetus;
+
+        public static string PelaajanVuoroYksi;
+        public static string VihollisenVuoroYksi;
+        public static string PelaajanVuoroKaksi;
+        public static string VihollisenVuoroKaksi;
+
+
+        public void CombatTekstiVaihdot()
+        {
+
+            string PelaajanVahinkoTeksti = Convert.ToString(playerCharacter.Damage);
+
+            if (EnemyAlive == true && playerCharacter.Hit == true && playerCharacter.CritHit == true && playerCharacter.Damage > 0)
+            { PelaajanOsumaTeksti = "Kriittinen osuma! Vihollinen otti " + PelaajanVahinkoTeksti + " vahinkoa."; }
+
+            else if (EnemyAlive == true && playerCharacter.Hit == true && playerCharacter.CritHit == false && playerCharacter.Damage > 0)
+            { PelaajanOsumaTeksti = "Osuma! Otit " + PelaajanVahinkoTeksti + " vahinkoa."; }
+
+            else if (EnemyAlive == true && playerCharacter.Hit == true && playerCharacter.CritHit == true && playerCharacter.Damage == 0)
+            { PelaajanOsumaTeksti = "Kriittinen osuma! Muttet ottanut vahinkoa."; }
+
+            else if (EnemyAlive == true && playerCharacter.Hit == true && playerCharacter.CritHit == true && playerCharacter.Damage == 0)
+            { PelaajanOsumaTeksti = "Osuma! Muttet ottanut vahinkoa."; }
+
+            else if (EnemyAlive == true && playerCharacter.Hit == false)
+            { PelaajanOsumaTeksti = "Huti!"; }
+
+            else if (EnemyAlive == false && playerCharacter.Hit == true && playerCharacter.CritHit == false)
+            { PelaajanOsumaTeksti = "Osuma! Otit " + PelaajanVahinkoTeksti + " vahinkoa ja menehdyit."; }
+
+            else if (EnemyAlive == false && playerCharacter.Hit == true && playerCharacter.CritHit == true)
+            { PelaajanOsumaTeksti = "Kriittinen osuma! Otit " + PelaajanVahinkoTeksti + " vahinkoa ja menehdyit."; }
+
+
+            string VihollisenVahinkoTeksti = Convert.ToString(enemyCharacter.Damage);
+
+            if (PlayerAlive == true && enemyCharacter.Hit == true && enemyCharacter.CritHit == true && enemyCharacter.Damage > 0)
+            { VihollisenOsumaTeksti = "Kriittinen osuma! Otit " + VihollisenVahinkoTeksti + " vahinkoa."; }
+
+            else if (PlayerAlive == true && enemyCharacter.Hit == true && enemyCharacter.CritHit == false && enemyCharacter.Damage > 0)
+            { VihollisenOsumaTeksti = "Osuma! Otit " + VihollisenVahinkoTeksti + " vahinkoa."; }
+
+            else if (PlayerAlive == true && enemyCharacter.Hit == true && enemyCharacter.CritHit == true && enemyCharacter.Damage == 0)
+            { VihollisenOsumaTeksti = "Kriittinen osuma! Muttet ottanut vahinkoa."; }
+
+            else if (PlayerAlive == true && enemyCharacter.Hit == true && enemyCharacter.CritHit == false && enemyCharacter.Damage == 0)
+            { VihollisenOsumaTeksti = "Osuma! Muttet ottanut vahinkoa."; }
+
+            else if (PlayerAlive == true && enemyCharacter.Hit == false)
+            { VihollisenOsumaTeksti = "Huti!"; }
+
+            else if (PlayerAlive == false && enemyCharacter.Hit == true && enemyCharacter.CritHit == false)
+            { VihollisenOsumaTeksti = "Osuma! Otit " + VihollisenVahinkoTeksti + " vahinkoa ja menehdyit."; }
+
+            else if (PlayerAlive == false && enemyCharacter.Hit == true && enemyCharacter.CritHit == true)
+            { VihollisenOsumaTeksti = "Kriittinen osuma! Otit " + VihollisenVahinkoTeksti + " vahinkoa ja menehdyit."; }
+
+            PelaajanVuoroYksi = "\nHyökkäät!";
+            VihollisenVuoroYksi = "\nVihollinen hyökkää!";
+            PelaajanVuoroKaksi = "\nHyökkäät uudelleen!";
+            VihollisenVuoroKaksi = "\nVihollinen hyökkää uudelleen!";
+
+            playerCharacter.LopullinenVahinko = (int)enemyCharacter.HitPoints - (int)enemyCharacter.HitPointTotal;
+            enemyCharacter.LopullinenVahinko = (int)playerCharacter.HitPoints - (int)playerCharacter.HitPointTotal;
+
+            TaistelunLopetus = "\nTaistelu päättyi! Teit " + playerCharacter.LopullinenVahinko +
+            " vahinkoa ja vihollinen teki " + enemyCharacter.LopullinenVahinko + " vahinkoa.\nSinulle jäi " + playerCharacter.HitPointTotal + "HP ja viholliselle jäi "
+            + enemyCharacter.HitPointTotal + "HP.";
+
+        }
+
+    }
+
+    public class ItseTappelu : Calculator
+    {
+
+        public void ActualCombat()
+        {
+            var CombatCalc = new CombatCalcs();
+
+            int d = 0;
+            int e = 0;
+
+            Console.WriteLine("\nPelaajan lopulliset statit olivat: ");
+            while (d < FinalStatDisplay.Count)
+                {
+                    Console.Write(playerCharacter.FinalStatDisplay[d] + " " + playerCharacter.LopullisetStatit[d] + " ");
+                    d++;
+                }
+            Console.ReadKey();
+
+            Console.WriteLine("\nVihollisen lopulliset statit olivat: ");
+            while (e < FinalStatDisplay.Count)
+                {
+                    Console.Write(enemyCharacter.FinalStatDisplay[e] + " " + enemyCharacter.LopullisetStatit[e] + " ");
+                    e++;
+                }
+            Console.ReadKey();
+
+            Console.WriteLine("\nTaistelu alkaa!");
+            Console.ReadKey();
+
+            CombatCalc.PlayerCombat();
+            Console.WriteLine(CombatTekstit.PelaajanVuoroYksi);
+            Console.ReadKey();
+
+            Console.WriteLine(CombatTekstit.PelaajanOsumaTeksti);
+            Console.ReadKey();
+
+            if (EnemyAlive)
+                {
+                    CombatCalc.EnemyCombat();
+                    Console.WriteLine(CombatTekstit.VihollisenVuoroYksi);
+                    Console.ReadKey();
+
+                    Console.WriteLine(CombatTekstit.VihollisenOsumaTeksti);
+                    Console.ReadKey();
+                }
+            else { Console.WriteLine(CombatTekstit.TaistelunLopetus); }
+
+            if (EnemyAlive && PlayerAlive && playerCharacter.AttackSpeed >= enemyCharacter.AttackSpeed + 5)
+                {
+                    CombatCalc.PlayerCombat();
+                    Console.WriteLine(CombatTekstit.PelaajanVuoroKaksi);
+                    Console.ReadKey();
+                    Console.WriteLine(CombatTekstit.PelaajanOsumaTeksti);
+                }
+            else if (EnemyAlive && PlayerAlive && enemyCharacter.AttackSpeed >= playerCharacter.AttackSpeed + 5)
+                {
+                    CombatCalc.EnemyCombat();
+                    Console.WriteLine(CombatTekstit.VihollisenVuoroKaksi);
+                    Console.ReadKey();
+                    Console.WriteLine(CombatTekstit.VihollisenOsumaTeksti);
+                    Console.ReadKey();
+                }
+            else { Console.WriteLine(CombatTekstit.TaistelunLopetus); }
+        }
+    }
+}
